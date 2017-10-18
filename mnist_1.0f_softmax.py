@@ -49,7 +49,8 @@ W = tf.Variable(tf.zeros([784, 10]))
 b = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
-# -1 in the shape definition means "the only possible dimension that will preserve the number of elements"
+# -1 in the shape definition means "the only possible dimension that 
+# will preserve the number of elements"
 XX = tf.reshape(X, [-1, 784])
 
 # The model
@@ -125,26 +126,129 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
 
 '''
+    \ To trace this formula, I need to get XX, W and b 
+    \ They are not directly reachable. peforth can make it possible.
+    
+        Y = tf.nn.softmax(tf.matmul(XX, W) + b)
 
     \ This snippet creates batch_X, batch_Y FORTH values for investigation
-    <text> 
-    locals().update(harry_port());  # bring in all things
-    batch_X, batch_Y = mnist.train.next_batch(100);  # get what we want
-    ok(cmd="--- marker --- exit");  # clear things in forth
-    outport(locals())  # add back with new ones created here 
-    </text> -indent py: exec(pop())
+        <accept>
+        <text> 
+        locals().update(harry_port());  # bring in all things
+        # ------------ get what we want --------------------------
+        batch_X, batch_Y = mnist.train.next_batch(100);  
+        # ------------ get what we want --------------------------
+        dictate("--- marker ---"); outport(locals()) # bring out all things
+        </text> -indent py: exec(pop())
+        </accept> dictate 
 
-    bp11> batch_X :> [0].shape . cr
-    (28, 28, 1)
-    bp11> batch_X :> shape . cr
-    (100, 28, 28, 1)
-    bp11>
-    bp11> batch_Y :> shape . cr
-    (100, 10)
-    bp11> batch_Y :> [0] . cr
-    [ 0.  0.  0.  0.  0.  0.  0.  0.  1.  0.]
-    bp11>
+    \ Study tf.reshape()
+        bp11> batch_Y :> shape . cr
+        (100, 10)
+        bp11> batch_Y :> [0] . cr
+        [ 0.  0.  0.  0.  0.  0.  0.  0.  1.  0.]
+        bp11> batch_X :> shape . cr
+        (100, 28, 28, 1)
+        bp11> batch_X :> [0].shape . cr
+        (28, 28, 1)
+        bp11> batch_X :> [0] . cr
+        [[[][][][][][][][][][][][][][][][][][][][][][][][][][][][]]  # 
+         .... snip ...........                                       # 28 rows
+         [[][][][][][][][][][][][][][][][][][][][][][][][][][][][]]  # 
+         [[][][][][][][][][][][][][][][][][][][][][][][][][][][][]]] # 
+        bp11>
 
+    \ Try tf.reshape()    
+        <accept>
+        <text> 
+        locals().update(harry_port());  # bring in all things
+        # ------------ get what we want --------------------------
+        myXX = tf.reshape(batch_X, [-1, 784])
+        # ------------ get what we want --------------------------
+        dictate("--- marker ---"); outport(locals()) # bring out all things
+        </text> -indent py: exec(pop()) </accept> dictate 
+    
+    \ myXX is still a tensor !
+        bp11> myXX . cr
+        Tensor("Reshape_11:0", shape=(100, 784), dtype=float32)
+    
+    \ sess.run to see myXX 
+        bp11> sess :> run(v('myXX')) . cr
+        [[ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         ...,
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]]
+        bp11>    
+   
+    \ 醒醒！ 別鑽 reshape 的牛角尖，Martin 的解釋很神！ see my Ynote.
+    \ 倒是當初讀取 mnist 的時候，就可以指定要 reshape 了吧？因為 Morvan 的 tut 
+    \ 沒這麼麻煩。
+        (Martin) mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validation_size=0)
+        (Morvan) mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+        看來是 Martin 自己搞出來的麻煩？可能是他的 animation 需要！
+
+    \ Next W b are easy, they are Variables, can be seen by sess.run directly
+    
+        bp11> W .
+        <tf.Variable 'Variable:0' shape=(784, 10) dtype=float32_ref>bp11>
+        bp11>
+        bp11> b . cr
+        <tf.Variable 'Variable_1:0' shape=(10,) dtype=float32_ref>
+        bp11>
+        bp11>
+        bp11> sess :> run(v('W')) . cr
+        [[ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         ...,
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]]
+        bp11> sess :> run(v('b')) . cr
+        [ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+        bp11> sess :> run(v('b')).shape . cr
+        (10,)
+        bp11> sess :> run(v('W')).shape . cr
+        (784, 10)
+        bp11>    
+
+    \ Test tf.matmul(XX, W)
+        Y = tf.nn.softmax(tf.matmul(XX, W) + b)
+
+    \ matmul() 前後面面相接處的 shape 要一致
+        \ 變出 np 
+            bp11> py:~ import numpy; push(numpy)
+            bp11> constant np // ( -- obj ) numpy
+            bp11> np .
+            <module 'numpy' from 'C:\\Users\\hcche\\AppData\\Local\\Programs\\Python\\Python36\\lib\\site-packages\\numpy\\__init__.py'>bp11> np :> array([[1,2]]).shape . cr
+        \ 利用 np 查看 shape     
+            bp11> np :> array([[1,2]]).shape . cr
+            (1, 2)
+            bp11> np :> array([[3],[4]]).shape . cr
+            (2, 1)
+            bp11>
+        see Ynote : "tf.matmul() 研究了好久" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
     \ If we can see placeholders X and Y then we can see anything...
     <text>
     locals().update(harry_port());  # bring in all things
@@ -163,7 +267,6 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
     correct_prediction accuracy train_step allweights allbiases I It datavis init 
     sess training_step batch_X batch_Y myX myY
     bp11>              ^^^^^^^^^^^^^^^^^^^^^^^^------Bingo!!                
-    
-    
-'''
 
+
+'''
