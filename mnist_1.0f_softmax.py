@@ -127,18 +127,17 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
 '''
     \ To trace this formula, I need to get XX, W and b 
-    \ They are not directly reachable. peforth can make it possible.
+      They are not directly reachable. peforth can make it possible.
     
         Y = tf.nn.softmax(tf.matmul(XX, W) + b)
 
-    \ This snippet creates batch_X, batch_Y FORTH values for investigation
-        <accept>
-        <text> 
+    \ This snippet adds batch_X, batch_Y into value.outport for investigation
+        <accept> <text> 
         locals().update(harry_port());  # bring in all things
         # ------------ get what we want --------------------------
         batch_X, batch_Y = mnist.train.next_batch(100);  
         # ------------ get what we want --------------------------
-        dictate("--- marker ---"); outport(locals()) # bring out all things
+        dictate("---xray--- marker ---xray---"); outport(locals()) # bring out all things
         </text> -indent py: exec(pop())
         </accept> dictate 
 
@@ -159,13 +158,12 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
         bp11>
 
     \ Try tf.reshape()    
-        <accept>
-        <text> 
+        <accept> <text> 
         locals().update(harry_port());  # bring in all things
         # ------------ get what we want --------------------------
         myXX = tf.reshape(batch_X, [-1, 784])
         # ------------ get what we want --------------------------
-        dictate("--- marker ---"); outport(locals()) # bring out all things
+        dictate("---xray--- marker ---xray---"); outport(locals()) # bring out all things
         </text> -indent py: exec(pop()) </accept> dictate 
     
     \ myXX is still a tensor !
@@ -215,9 +213,6 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
         (784, 10)
         bp11>    
 
-    \ Test tf.matmul(XX, W)
-        Y = tf.nn.softmax(tf.matmul(XX, W) + b)
-
     \ matmul() 前後面面相接處的 shape 要一致
         \ 變出 np 
             bp11> py:~ import numpy; push(numpy)
@@ -232,7 +227,9 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
             bp11>
         see Ynote : "tf.matmul() 研究了好久" 
 
-
+    \ Test tf.matmul(XX, W)
+        Y = tf.nn.softmax(tf.matmul(XX, W) + b)
+    
 
 
 

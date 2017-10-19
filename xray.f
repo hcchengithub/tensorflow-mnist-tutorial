@@ -7,7 +7,7 @@
     
     
 
-    marker ---
+    marker ---xray---
         
     \ Initial Check 
     dos title working play ground
@@ -32,18 +32,23 @@
     ." Error!! You reached to the never land, what's the problem?" cr
     ." Error!! You reached to the never land, what's the problem?" cr
     ." Press enter to continue but don't!" accept
+
+    \ 抽換 marker 界線，把 --- 改成 ---xray---
+        <accept> <text> 
+        locals().update(harry_port());  # bring in all FORTH value.outport
+        dictate("-xray- marker ---xray---"); outport(locals()) # bring out all locals()
+        </text> -indent py: exec(pop())
+        </accept> dictate 
     
-    \ This snippet creates batch_X, batch_Y FORTH values for investigation
-    <accept>
-    <text> 
-    locals().update(harry_port());  # bring in all things
-    # ------------ get what we want --------------------------
-    batch_X, batch_Y = mnist.train.next_batch(100);  
-    # ------------ get what we want --------------------------
-    dictate("--- marker ---"); outport(locals()) # bring out all things
-    </text> -indent py: exec(pop())
-    </accept>
-    dictate 
+    \ This snippet adds batch_X, batch_Y into value.outport for investigation
+        <accept> <text> 
+        locals().update(harry_port());  # bring in all things
+        # ------------ get what we want --------------------------
+        batch_X, batch_Y = mnist.train.next_batch(100);  
+        # ------------ get what we want --------------------------
+        dictate("---xray--- marker ---xray---"); outport(locals()) # bring out all things
+        </text> -indent py: exec(pop())
+        </accept> dictate 
 
     bp11> batch_X :> [0].shape . cr
     (28, 28, 1)
@@ -61,7 +66,7 @@
     locals().update(harry_port());  # bring in all things
     myX = sess.run(X,feed_dict={X: batch_X, Y_: batch_Y})
     myY = sess.run(Y,feed_dict={X: batch_X, Y_: batch_Y})
-    ok(cmd="--- marker --- exit");  # clear things in forth
+    ok(cmd="---xray--- marker ---xray--- exit");  # clear things in forth
     outport(locals())
     </text> -indent py: exec(pop()) 
 
