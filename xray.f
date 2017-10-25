@@ -1,14 +1,44 @@
 
+
     ' ### [if] ### [then] marker ###
+
+    :> [0] constant parent // ( -- locals ) Caller's locals() dict
     
+    \ Imports 
+    \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 
+    
+    py> os.getcwd() constant working-directory // ( -- "path" ) Tutorial home directory saved copy
+    
+    \ my MNIST_data directory is there
+    cd c:\Users\hcche\Downloads
+    
+    py:~ from tensorflow.examples.tutorials.mnist import input_data; push(input_data)
+    parent :: ['mnist_data']=pop(1)
+    
+    working-directory py: os.chdir(pop()) \ Go home
+
+    \ Common tools 
+
     dos title Tensorflow MNIST tutorial playground
     
-    \ Common tools 
+    cr <text>
     
-    
+        MNIST dataset imported
+        You can play around and 'exit' to continue the tutorial
+
+    </text> . cr
+
+    stop \ ------------------- Never Land -------------------------------------------
+
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Press enter to continue but don't!" accept
 
     marker ---xray---
-        
+
     \ Initial Check 
     dos title working play ground
     cr version drop ." Current directory is : " cd
@@ -24,17 +54,8 @@
         \ [else] exit *debug* 22 ( <---------------- exit to tutorial ) [then] 
     [then]
     ." Type <Enter> to proceed " accept drop 
-    py: sys.modules['pdb'].set_trace()
-    stop
+    break-include
     
-    \ ------------------- Never Land -------------------------------------------
-    
-    ." Error!! You reached to the never land, what's the problem?" cr
-    ." Error!! You reached to the never land, what's the problem?" cr
-    ." Error!! You reached to the never land, what's the problem?" cr
-    ." Error!! You reached to the never land, what's the problem?" cr
-    ." Error!! You reached to the never land, what's the problem?" cr
-    ." Press enter to continue but don't!" accept
 
     \ 抽換 marker 界線，把 --- 改成 ---xray---
         <accept> <text> 
@@ -83,27 +104,13 @@
     sess training_step batch_X batch_Y myX myY
     bp11>              ^^^^^^^^^^^^^^^^^^^^^^^^------Bingo!!                
 
+    \ peforth can import modules with the ability of cd, dos,
+    \ os.chdir() and os.getcwd() they can be at different paths
     
-    \ [x] exit doesn't work?    
-        p e f o r t h    v1.09
-        source code http://github.com/hcchengithub/peforth
-        Type 'peforth.ok()' to enter forth interpreter, 'exit' to come back.
+    py:~ import tensorflow as tf; push(tf)
+    parent :: ['tf']=pop(1)
+    py:~ import tensorflowvisu; push(tensorflowvisu)
+    parent :: ['tensorflowvisu']=pop(1)
 
-        Current directory is : c:\Users\hcche\Documents\GitHub\ML\tensorflow-mnist-tutorial
-        TenserFlow dataset at ./MNIST_data is expected but not found!
-        Move it over to here if you have it already.
-        Type <Enter> to proceed downloading it or 'abort' to STOP
-        Error!! You reached to the never land, what's the problem?
-        Error!! You reached to the never land, what's the problem?
-        Error!! You reached to the never land, what's the problem?
-        Error!! You reached to the never land, what's the problem?
-        Error!! You reached to the never land, what's the problem?
-        Press enter to continue but don't!
-        --> run setup.bat update new code that has fixed the probelm.
-
-    [ ] mnist_1.0f_softmax.py stack is not empty at beginning
-        bp11> .s
-              0:           0           0h (<class 'int'>)
-              1:           0           0h (<class 'int'>)
-        bp11>    
+    
     
