@@ -1,5 +1,5 @@
 
-    ### marker ###
+    ' ### [if] ### [then] marker ###
     
     dos title Tensorflow MNIST tutorial playground
     
@@ -15,15 +15,18 @@
     dos if exist MNIST_data exit 34157
     34157 = [if] 
         ." TenserFlow dataset ./MNIST_data is existing. Good! Good! Good! let's go on ...." cr 
-        exit \ <---------- exit to tutorial
+        \ exit \ <---------- exit to tutorial
     [else]
         ." TenserFlow dataset at ./MNIST_data is expected but not found!" cr
         ." Move it over to here if you have it already." cr
-        ." Type <Enter> to proceed downloading it or 'abort' to STOP "
-        accept char abort = [if] ." Action aborted by user." cr bye \ terminate
-        [else] exit ( <---------------- exit to tutorial ) [then] 
+        \ ." Type <Enter> to proceed downloading it or 'abort' to STOP "
+        \ accept char abort = [if] ." Action aborted by user." cr bye \ terminate
+        \ [else] exit *debug* 22 ( <---------------- exit to tutorial ) [then] 
     [then]
-
+    ." Type <Enter> to proceed " accept drop 
+    py: sys.modules['pdb'].set_trace()
+    stop
+    
     \ ------------------- Never Land -------------------------------------------
     
     ." Error!! You reached to the never land, what's the problem?" cr
@@ -79,3 +82,28 @@
     correct_prediction accuracy train_step allweights allbiases I It datavis init 
     sess training_step batch_X batch_Y myX myY
     bp11>              ^^^^^^^^^^^^^^^^^^^^^^^^------Bingo!!                
+
+    
+    \ [x] exit doesn't work?    
+        p e f o r t h    v1.09
+        source code http://github.com/hcchengithub/peforth
+        Type 'peforth.ok()' to enter forth interpreter, 'exit' to come back.
+
+        Current directory is : c:\Users\hcche\Documents\GitHub\ML\tensorflow-mnist-tutorial
+        TenserFlow dataset at ./MNIST_data is expected but not found!
+        Move it over to here if you have it already.
+        Type <Enter> to proceed downloading it or 'abort' to STOP
+        Error!! You reached to the never land, what's the problem?
+        Error!! You reached to the never land, what's the problem?
+        Error!! You reached to the never land, what's the problem?
+        Error!! You reached to the never land, what's the problem?
+        Error!! You reached to the never land, what's the problem?
+        Press enter to continue but don't!
+        --> run setup.bat update new code that has fixed the probelm.
+
+    [ ] mnist_1.0f_softmax.py stack is not empty at beginning
+        bp11> .s
+              0:           0           0h (<class 'int'>)
+              1:           0           0h (<class 'int'>)
+        bp11>    
+    
