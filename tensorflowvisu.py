@@ -371,6 +371,8 @@ class MnistDataVis:
 
         if save_movie:
             mywriter = animation.FFMpegWriter(fps=24, codec='libx264', extra_args=['-pix_fmt', 'yuv420p', '-profile:v', 'high', '-tune', 'animation', '-crf', '18'])
+            # --Lynix-- self._animation.save("./tensorflowvisu_video.mp4", writer=mywriter)
+            # --windows-- 還是無效 self._animation.save("tensorflowvisu_video.mp4", writer=mywriter)
             self._animation.save("./tensorflowvisu_video.mp4", writer=mywriter)
         else:
             plt.show(block=True)

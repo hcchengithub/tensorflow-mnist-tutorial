@@ -47,10 +47,19 @@ mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validatio
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 # correct answers will go here
 Y_ = tf.placeholder(tf.float32, [None, 10])
-# weights W[784, 10]   784=28*28
-W = tf.Variable(tf.zeros([784, 10]))
-# biases b[10]
-b = tf.Variable(tf.zeros([10]))
+
+# My Layer1 784x47
+# weights W[784, 47]   784=28*28
+W1 = tf.Variable(tf.zeros([784, 47]))
+b1 = tf.Variable(tf.zeros([47]))
+
+# My Layer2 47x47
+W2 = tf.Variable(tf.zeros([47, 47]))
+b2 = tf.Variable(tf.zeros([47]))
+
+# My Layer1 784x50
+W3 = tf.Variable(tf.zeros([47, 10]))
+b3 = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
 # -1 in the shape definition means "the only possible dimension that 
@@ -58,7 +67,9 @@ b = tf.Variable(tf.zeros([10]))
 XX = tf.reshape(X, [-1, 784])
 
 # The model
-Y = tf.nn.softmax(tf.matmul(XX, W) + b)
+Y1 = tf.nn.softmax(tf.matmul(XX, W1) + b1)
+Y2 = tf.nn.softmax(tf.matmul(Y1, W2) + b2)
+Y  = tf.nn.softmax(tf.matmul(Y2, W3) + b3)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
 #                           Y: the computed output vector
@@ -79,8 +90,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_step = tf.train.GradientDescentOptimizer(0.005).minimize(cross_entropy)
 
 # matplotlib visualisation
-allweights = tf.reshape(W, [-1])
-allbiases = tf.reshape(b, [-1])
+allweights = tf.reshape(W3, [-1])
+allbiases = tf.reshape(b3, [-1])
 I = tensorflowvisu.tf_format_mnist_images(X, Y, Y_)  # assembles 10x10 images by default
 It = tensorflowvisu.tf_format_mnist_images(X, Y, Y_, 1000, lines=25)  # 1000 images on 25 lines
 datavis = tensorflowvisu.MnistDataVis()
@@ -114,7 +125,7 @@ def training_step(i, update_test_data, update_train_data):
 
     # the backpropagation training step
     sess.run(train_step, feed_dict={X: batch_X, Y_: batch_Y})
-    if peforth.vm.debug==22: peforth.ok('bp22> ',loc=locals(), cmd = "---xray--- marker ---xray--- :> [0] inport")
+    if peforth.vm.debug==22: peforth.ok('',loc=locals(), cmd = "---xray--- marker ---xray--- :> [0] inport i autoexec exit")
 
 if peforth.vm.debug==11: peforth.ok("bp11> ",loc=locals(),cmd="---xray--- marker ---xray--- :> [0] inport")
 

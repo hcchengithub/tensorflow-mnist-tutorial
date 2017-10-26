@@ -1,6 +1,5 @@
 
 
-    ' ### [if] ### [then] marker ###
 
     :> [0] dup constant parent // ( -- locals ) Caller's locals() dict
     inport 
@@ -22,17 +21,24 @@
 
     dos title Tensorflow MNIST tutorial playground
 
+    : autoexec 100 py> tos(1)%pop() not and if py: ok('loop-100>>') then ;
+    // ( i -- ) Auto-run at breakpoint 
+    
     cr ."     Tensorflow version "  tf :> __version__ . cr
     
     <text>
     
-    MNIST dataset imported
-    You can play around and 'exit' to continue the tutorial
+    MNIST dataset imported.
+    You can now make some setups, like py: vm.debug=22 or the likes.
+    You can play around and 'exit' to continue the tutorial.
 
     </text> . cr
+    
+    marker ---xray---
 
     stop \ ------------------- Never Land -------------------------------------------
 
+    
     ." Error!! You reached never land, what's the problem?" cr
     ." Error!! You reached never land, what's the problem?" cr
     ." Error!! You reached never land, what's the problem?" cr
@@ -40,7 +46,6 @@
     ." Error!! You reached never land, what's the problem?" cr
     ." Press enter to continue but don't!" accept
 
-    marker ---xray---
 
     \ Initial Check 
     dos title working play ground
@@ -60,10 +65,10 @@
     break-include
     
 
-    \ 抽換 marker 界線，把 --- 改成 ---xray---
+    \ 抽換 marker 界線，把 --- 改成 ---xray--- replace marker 
         <accept> <text> 
         locals().update(harry_port());  # bring in all FORTH value.outport
-        dictate("-xray- marker ---xray---"); outport(locals()) # bring out all locals()
+        dictate("### marker ---xray---"); outport(locals()) # bring out all locals()
         </text> -indent py: exec(pop())
         </accept> dictate 
     
