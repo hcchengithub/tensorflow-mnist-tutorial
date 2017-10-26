@@ -50,15 +50,18 @@ Y_ = tf.placeholder(tf.float32, [None, 10])
 
 # My Layer1 784x47
 # weights W[784, 47]   784=28*28
-W1 = tf.Variable(tf.zeros([784, 47]))
+# W1 = tf.Variable(tf.zeros([784, 47]))  <-- needs init when multy layer
+W1 = tf.Variable(tf.truncated_normal([784, 47], stddev=0.1))
 b1 = tf.Variable(tf.zeros([47]))
 
+
+
 # My Layer2 47x47
-W2 = tf.Variable(tf.zeros([47, 47]))
+W2 = tf.Variable(tf.truncated_normal([47, 47], stddev=0.1))  
 b2 = tf.Variable(tf.zeros([47]))
 
 # My Layer1 784x50
-W3 = tf.Variable(tf.zeros([47, 10]))
+W3 = tf.Variable(tf.truncated_normal([47, 10], stddev=0.1)) 
 b3 = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
@@ -67,8 +70,8 @@ b3 = tf.Variable(tf.zeros([10]))
 XX = tf.reshape(X, [-1, 784])
 
 # The model
-Y1 = tf.nn.softmax(tf.matmul(XX, W1) + b1)
-Y2 = tf.nn.softmax(tf.matmul(Y1, W2) + b2)
+Y1 = tf.nn.sigmoid(tf.matmul(XX, W1) + b1)
+Y2 = tf.nn.sigmoid(tf.matmul(Y1, W2) + b2)
 Y  = tf.nn.softmax(tf.matmul(Y2, W3) + b3)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )

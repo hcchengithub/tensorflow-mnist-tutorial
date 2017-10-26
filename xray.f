@@ -21,7 +21,7 @@
 
     dos title Tensorflow MNIST tutorial playground
 
-    : autoexec 100 py> tos(1)%pop() not and if py: ok('loop-100>>') then ;
+    : autoexec 100 py> tos(1)%pop() not and if py: ok('loop-100>>',cmd="cr") then ;
     // ( i -- ) Auto-run at breakpoint 
     
     cr ."     Tensorflow version "  tf :> __version__ . cr
@@ -35,7 +35,9 @@
     </text> . cr
     
     marker ---xray---
-
+    py: vm.debug=22
+    exit
+    
     stop \ ------------------- Never Land -------------------------------------------
 
     
