@@ -134,12 +134,13 @@ if peforth.vm.debug==11: peforth.ok("bp11> ",loc=locals(),cmd="---xray--- marker
 
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the "for i in range(2000+1)" line instead of the datavis.animate line
-disable_the_visualisation = False
+disable_the_visualisation = True
+max_loop = 8001
 if disable_the_visualisation:
-    for i in range(2000+1): training_step(i, i % 50 == 0, i % 10 == 0)
+    for i in range(max_loop): training_step(i, i % 50 == 0, i % 10 == 0)
 else:    
     save_movie = False
-    datavis.animate(training_step, iterations=2000+1, train_data_update_freq=10, test_data_update_freq=50, more_tests_at_start=True, save_movie=save_movie)
+    datavis.animate(training_step, iterations=max_loop, train_data_update_freq=10, test_data_update_freq=50, more_tests_at_start=True, save_movie=save_movie)
 
 print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
