@@ -12,10 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
+
+
 import tensorflow as tf
 import tensorflowvisu
+
 # -- moved into xray.f -- from tensorflow.examples.tutorials.mnist import input_data as mnist_data 
+import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
+
 print("Tensorflow version " + tf.__version__)
 tf.set_random_seed(0)
 
@@ -124,7 +128,7 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
 # final max test accuracy = 0.9268 (10K iterations). Accuracy should peak above 0.92 in the first 2000 iterations.
 
-peforth.ok('Done>', loc=locals(),cmd=":> [0] inport") 
+peforth.ok('Done>', loc=locals(),cmd=":> [0] constant parent@done") 
 
 '''
     \ c:\ Users\hcche\Documents\GitHub\ML\tensorflow-mnist-tutorial\mnist_1.0f_softmax.py 

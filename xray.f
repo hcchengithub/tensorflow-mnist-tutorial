@@ -2,7 +2,8 @@
 
     ' ### [if] ### [then] marker ###
 
-    :> [0] constant parent // ( -- locals ) Caller's locals() dict
+    :> [0] dup constant parent // ( -- locals ) Caller's locals() dict
+    inport 
     
     \ Imports 
     \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 
@@ -20,11 +21,13 @@
     \ Common tools 
 
     dos title Tensorflow MNIST tutorial playground
+
+    cr ."     Tensorflow version "  tf :> __version__ . cr
     
-    cr <text>
+    <text>
     
-        MNIST dataset imported
-        You can play around and 'exit' to continue the tutorial
+    MNIST dataset imported
+    You can play around and 'exit' to continue the tutorial
 
     </text> . cr
 
