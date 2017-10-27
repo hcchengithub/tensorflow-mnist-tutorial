@@ -51,18 +51,24 @@ Y_ = tf.placeholder(tf.float32, [None, 10])
 # My Layer1 784x47
 # weights W[784, 47]   784=28*28
 # W1 = tf.Variable(tf.zeros([784, 47]))  <-- needs init when multy layer
-W1 = tf.Variable(tf.truncated_normal([784, 47], stddev=0.1))
-b1 = tf.Variable(tf.zeros([47]))
+W1 = tf.Variable(tf.truncated_normal([784, 500], stddev=0.1))
+b1 = tf.Variable(tf.zeros([500]))
 
+# My Layer2
+W2 = tf.Variable(tf.truncated_normal([500, 500], stddev=0.1))  
+b2 = tf.Variable(tf.zeros([500]))
 
+# My Layer3
+W3 = tf.Variable(tf.truncated_normal([500, 500], stddev=0.1)) 
+b3 = tf.Variable(tf.zeros([500]))
 
-# My Layer2 47x47
-W2 = tf.Variable(tf.truncated_normal([47, 47], stddev=0.1))  
-b2 = tf.Variable(tf.zeros([47]))
+# My Layer4
+W4 = tf.Variable(tf.truncated_normal([500, 200], stddev=0.1)) 
+b4 = tf.Variable(tf.zeros([200]))
 
-# My Layer1 784x50
-W3 = tf.Variable(tf.truncated_normal([47, 10], stddev=0.1)) 
-b3 = tf.Variable(tf.zeros([10]))
+# My Layer5
+W5 = tf.Variable(tf.truncated_normal([200, 10], stddev=0.1)) 
+b5 = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
 # -1 in the shape definition means "the only possible dimension that 
@@ -72,9 +78,11 @@ XX = tf.reshape(X, [-1, 784])
 # The model
 Y1 = tf.nn.relu(tf.matmul(XX, W1) + b1)
 Y2 = tf.nn.relu(tf.matmul(Y1, W2) + b2)
+Y3 = tf.nn.relu(tf.matmul(Y2, W3) + b3)
+Y4 = tf.nn.relu(tf.matmul(Y3, W4) + b4)
 
 # Y  = tf.nn.softmax(tf.matmul(Y2, W3) + b3)
-Ylogits  = tf.matmul(Y2, W3) + b3
+Ylogits  = tf.matmul(Y4, W5) + b5
 Y  = tf.nn.softmax(Ylogits)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
@@ -96,9 +104,13 @@ cross_entropy = tf.reduce_mean(cross_entropy0) * 100
 correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+# Learning Rate Decay 
+learning_rate_decay = tf.placeholder(tf.float32)
+
 # training, learning rate = 0.005
 # train_step = tf.train.GradientDescentOptimizer(0.005).minimize(cross_entropy)
-train_step = tf.train.AdamOptimizer(0.005).minimize(cross_entropy)
+# train_step = tf.train.AdamOptimizer(0.005).minimize(cross_entropy)
+train_step = tf.train.AdamOptimizer(learning_rate_decay).minimize(cross_entropy)
 
 # matplotlib visualisation
 allweights = tf.reshape(W3, [-1])
@@ -134,8 +146,13 @@ def training_step(i, update_test_data, update_train_data):
         datavis.update_image2(im)
         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
 
+    # learning_rate_decay
+    irmax = 0.005
+    irmin = 0.00001
+    knee = 1000
+    ir = irmin + (irmax-irmin)*10**(-i/knee)
     # the backpropagation training step
-    sess.run(train_step, feed_dict={X: batch_X, Y_: batch_Y})
+    sess.run(train_step, feed_dict={X: batch_X, Y_: batch_Y, learning_rate_decay:ir})
     if peforth.vm.debug==22: peforth.ok('',loc=locals(), cmd = "---xray--- marker ---xray--- :> [0] inport i autoexec exit")
 
 if peforth.vm.debug==11: peforth.ok("bp11> ",loc=locals(),cmd="---xray--- marker ---xray--- :> [0] inport")
@@ -143,7 +160,7 @@ if peforth.vm.debug==11: peforth.ok("bp11> ",loc=locals(),cmd="---xray--- marker
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the "for i in range(2000+1)" line instead of the datavis.animate line
 disable_the_visualisation = True
-max_loop = 8001
+max_loop = 4001
 if disable_the_visualisation:
     for i in range(max_loop): training_step(i, i % 50 == 0, i % 10 == 0)
 else:    
