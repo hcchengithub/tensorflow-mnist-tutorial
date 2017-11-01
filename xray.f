@@ -1,5 +1,7 @@
 
 
+    \ Change DOSBox title
+    s" dos title " __main__ :> __file__ + dictate
 
     :> [0] dup constant parent // ( -- locals ) Caller's locals() dict
     inport 
