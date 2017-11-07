@@ -1,10 +1,10 @@
 
-
     \ Change DOSBox title
-    s" dos title " __main__ :> __file__ + dictate
-
-    :> [0] dup constant parent // ( -- locals ) Caller's locals() dict
-    inport 
+    :> [0] constant parent // ( -- locals ) Caller's locals() dict
+    s" dos title " __main__ :> __file__ + CRLF + dictate drop
+    
+    \ To drop a breakpoint into python
+    \ import peforth;peforth.ok('11> ',loc=locals(),cmd="parent inport")
     
     \ Imports 
     \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 
@@ -19,6 +19,15 @@
     
     working-directory py: os.chdir(pop()) \ Go home
 
+    exit break-include \ ------------------- Never Land -------------------------------------------
+   
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Error!! You reached never land, what's the problem?" cr
+    ." Press enter to continue but don't!" accept
+    
     \ Common tools 
 
     dos title Tensorflow MNIST tutorial playground
@@ -39,18 +48,6 @@
     
     marker ---xray---
     \ py: vm.debug=22
-    exit
-    
-    stop \ ------------------- Never Land -------------------------------------------
-
-    
-    ." Error!! You reached never land, what's the problem?" cr
-    ." Error!! You reached never land, what's the problem?" cr
-    ." Error!! You reached never land, what's the problem?" cr
-    ." Error!! You reached never land, what's the problem?" cr
-    ." Error!! You reached never land, what's the problem?" cr
-    ." Press enter to continue but don't!" accept
-
 
     \ Initial Check 
     dos title working play ground
