@@ -41,7 +41,7 @@ tf.set_random_seed(0)
 #   Y: output matrix with 100 lines and 10 columns
 
 # Download images and labels into mnist.test (10K images+labels) and mnist.train (60K images+labels)
-mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validation_size=0)
+# (Moved into xray.f) mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validation_size=0)
 
 # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])
@@ -120,7 +120,7 @@ if peforth.vm.debug==11: peforth.ok("bp11> ",loc=locals(),cmd="---xray--- marker
 
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the "for i in range(2000+1)" line instead of the datavis.animate line
-disable_the_visualisation = False
+disable_the_visualisation = True
 if disable_the_visualisation:
     for i in range(2000+1): training_step(i, i % 50 == 0, i % 10 == 0)
 else:    

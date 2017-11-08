@@ -3,22 +3,26 @@
     :> [0] constant parent // ( -- locals ) Caller's locals() dict
     s" dos title " __main__ :> __file__ + CRLF + dictate drop
     
-    \ To drop a breakpoint into python
-    \ import peforth;peforth.ok('11> ',loc=locals(),cmd="parent inport")
-    
     \ Imports 
-    \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 
+    \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 避免重複浪費時間、空間。
     
-    py> os.getcwd() constant working-directory // ( -- "path" ) Tutorial home directory saved copy
+    py> os.getcwd() constant working-directory // ( -- "path" ) Saved copy of tutorial home directory path
     
     \ my MNIST_data directory is there
     cd c:\Users\hcche\Downloads
     
     py:~ from tensorflow.examples.tutorials.mnist import input_data; push(input_data)
-    parent :: ['mnist_data']=pop(1)
-    
-    working-directory py: os.chdir(pop()) \ Go home
+    constant mnist_module // ( -- mnist_module ) module
 
+    \ # Download images and labels into mnist.test (10K images+labels) and mnist.train (60K images+labels)
+    \ # mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validation_size=0)
+    mnist_module :>~ read_data_sets("MNIST_data", one_hot=True, reshape=False, validation_size=0)
+    constant mnist // ( -- datasets ) 3 datasets (train, validation, test)
+    mnist parent :: ['mnist']=pop(1) \ feedback to the tutorial 
+    mnist_module parent :: ['mnist_data']=pop(1) \ feedback to the tutorial 
+
+    working-directory py: os.chdir(pop()) \ Go home
+    
     exit break-include \ ------------------- Never Land -------------------------------------------
    
     ." Error!! You reached never land, what's the problem?" cr
@@ -30,6 +34,10 @@
     
     \ Common tools 
 
+    \ To drop a breakpoint into python
+    import peforth;peforth.ok('11> ',loc=locals(),cmd="parent inport")
+   
+    
     dos title Tensorflow MNIST tutorial playground
 
     1000 value pause // ( -- n ) Loop count to pause 
